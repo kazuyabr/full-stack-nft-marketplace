@@ -4,7 +4,23 @@ import { create as ipfsHttpClient } from 'ipfs-http-client'
 import { useRouter } from 'next/router'
 import Web3Modal from 'web3modal'
 
-const client = ipfsHttpClient('https://ipfs.infura.io:5001/api/v0')
+// const client = ipfsHttpClient('https://ipfs.infura.io:5001/api/v0')
+
+const projectId = "2Fgbc2bqNWsKLxmQOnXOpIpENir";
+const projectSecret = "9d15ecaf0c77fe7610479a6ee051fbdf";
+
+const projectIdAndSecret = `${projectId}:${projectSecret}`;
+const auth = `Basic ${Buffer.from(projectIdAndSecret).toString("base64")}`;
+
+const client = new ipfsHttpClient({
+    host: 'ipfs.infura.io',
+    port: 5001,
+    protocol: 'https',
+    headers: {
+        authorization: auth,
+    },
+});
+
 
 import {
   nftaddress, nftmarketaddress
@@ -14,21 +30,19 @@ import NFT from '../artifacts/contracts/NFT.sol/NFT.json'
 import Market from '../artifacts/contracts/Market.sol/NFTMarket.json'
 
 export default function CreateItem() {
-  const [fileUrl, setFileUrl] = useState(null)
+  const [fileUrl, updateFileUrl] = useState(null)
   const [formInput, updateFormInput] = useState({ price: '', name: '', description: '' })
   const router = useRouter()
 
   async function onChange(e) {
     const file = e.target.files[0]
+    console.log("Arquivo: ")
+    console.log(file)
+
     try {
-      const added = await client.add(
-        file,
-        {
-          progress: (prog) => console.log(`received: ${prog}`)
-        }
-      )
-      const url = `https://ipfs.infura.io/ipfs/${added.path}`
-      setFileUrl(url)
+      const added = await client.add(file)
+      const url = `https://marketplace-teste-123456.infura-ipfs.io/ipfs/${added.path}`
+      updateFileUrl(url)
     } catch (error) {
       console.log('Error uploading file: ', error)
     }  
@@ -42,7 +56,7 @@ export default function CreateItem() {
     })
     try {
       const added = await client.add(data)
-      const url = `https://ipfs.infura.io/ipfs/${added.path}`
+      const url = `https://marketplace-teste-123456.infura-ipfs.io/ipfs/${added.path}`
       /* after file is uploaded to IPFS, pass the URL to save it on Polygon */
       createSale(url)
     } catch (error) {
