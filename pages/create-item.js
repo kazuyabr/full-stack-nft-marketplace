@@ -120,7 +120,7 @@ export default function CreateItem() {
           )
         }
         <button onClick={createMarket} className="font-bold mt-4 bg-blue-500 text-white rounded p-4 shadow-lg">
-          List NFT For Sale
+          Colocar NFT a Venda
         </button>
       </div>
     </div>
